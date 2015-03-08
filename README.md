@@ -54,7 +54,7 @@ The binary output of the compilation as defined in the `Makefile` is the followi
 
 * `testh/bin/test`.
 
-To compile and run the program issue the following command at a command line whose current working directory is `testh/src/`:
+The following command needs to be issued at a command line whose current working directory is `testh/src/` in order to compile and run the program:
 
 * `make clean; make; make run`.
 
