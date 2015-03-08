@@ -50,7 +50,7 @@ int main (void) {
 
 A `Makefile` is used to define dependencies and linkages of the library at compile time. The file `testh/src/test.c` provides several usage examples of the library and contains the `main` function of a program that can be modified as one sees fit. 
 
-The binary output of the compilation as defined in the `Makefile` is the following: 
+The binary output of the compilation, as defined in the `Makefile`, is the following: 
 
 * `testh/bin/test`.
 
