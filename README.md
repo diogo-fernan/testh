@@ -2,7 +2,7 @@
 
 *TestH* is an ANSI C library that allows one to study **self-similar processes** by computing the **Hurst parameter** (also known as the Hurst exponent). The library has been made in an effort to provide researchers with means to estimate the Hurst parameter and to generate sequences with the self-similarity property embedded in the data. *TestH* implements several estimators of the Hurst parameter and generators of self-similar sequences that are already available in the literature. However, it does so in a single software package in a normalized and comprehensive way not found in other tools.
 
-*TestH* provides a friendly API that allows writing customized own programs with ease and few programming skills. The library provides generic methods to instantiate processes (by means of any of the generators or by reading data files), compute statistical information, and submit the processes to estimators of the Hurst parameter while pretty-printing the output. 
+*TestH* provides a friendly API that allows writing customized programs with ease and few programming skills. The library provides generic methods to instantiate processes (by means of any of the generators or by reading data files), compute statistical information, and submit the processes to estimators of the Hurst parameter while pretty-printing the output. 
 
 *TestH* has been written for researchers and for research purposes. With that in mind, the library can be used in a wide array of research fields.
 
