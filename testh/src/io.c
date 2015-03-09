@@ -1,6 +1,6 @@
 
 #include "io.h"
-#include "utilities.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -147,6 +147,51 @@ void io_PrintErr (
 	exit (EXIT_FAILURE);
 }
 
+void io_PrintBits (
+	unsigned long x, 
+	int k)
+{
+/* void bits (unsigned long long i) {
+	fprintf (stdout, "\n\t%llu (%lu) = ", i, sizeof (i) * 8);
+	int c = 0;
+	// unsigned long long mask = 0x8000000000000000L; // 8 bytes
+	unsigned long long mask = 0x80000000L; // 4 bytes
+	for (; mask != 0x00;) {
+    	fprintf (stdout, "%c", !!(mask & i) + '0');
+    	mask >>= 1;
+	    if (!(++c % 4))
+	    	fprintf (stdout, " ");
+	}
+	fprintf (stdout, "\n\n");
+} */
+
+/*    int i, n = CHAR_BIT * sizeof (unsigned long);
+   unsigned long mask = (unsigned long) 1 << (n - 1);
+   int spaces;
+   lebool flag = FALSE;
+
+   if (k > 0) {
+      spaces = k - n;
+      for (i = 0; i < spaces; i++)
+         printf (" ");
+   }
+   for (i = 0; i < n; i++) {
+      if (x & mask) {
+         printf ("1");
+         flag = TRUE;
+      } else if (flag)
+         printf ("0");
+      else
+         printf (" ");
+      mask >>= 1;
+   }
+   if (k < 0) {
+      spaces = -k - n;
+      for (i = 0; i < spaces; i++)
+         printf (" ");
+   } */
+}
+
 int io_CheckH (
 	double h)
 {
@@ -246,17 +291,17 @@ int io_FileGetNum (f, p)
 		io_PrintErr (ERR, "invalid FILE or double pointer (NULL) in"
 			" io_FileGetNum");
 
-	int s, m, d, ch;
+	int s, m, d, dd, ch;
 	char *str = NULL;
-	s = m = d = ch = 0;
+	s = m = d = dd = ch = 0;
 	
 	while (EOF != (ch = fgetc(f))) {
-		if (ch == '-') {
+		// fprintf (stdout, " %c %d\n", ch, s);
+		if (ch == '-')
 			m = 1;
-		} else if (ch == '.' || ch == ',') {
-			if (s > 0) {
+		if ((ch == '.' || ch == ',') && d != 1) {
+			if (s > 0)
 				d = 1;
-			}
 		}
 		else {
 			if (isdigit (ch)) {
@@ -270,12 +315,12 @@ int io_FileGetNum (f, p)
 						str = (char*) realloc (str, ++s * sizeof (char));
 						str[0] = ch;
 					}
-				} else if (d == 1) {
+				} else if (d == 1 && dd == 0) {
 					s += 2;
 					str = (char*) realloc (str, s * sizeof (char));
 					str[s-2] = '.';
 					str[s-1] = ch;
-					d = 0;
+					dd = 1;
 				} else {
 					str = (char*) realloc (str, ++s * sizeof (char));
 					str[s-1] = ch;

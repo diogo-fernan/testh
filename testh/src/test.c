@@ -1,13 +1,14 @@
 
-#include "process.h"
-#include "generators.h"
-#include "estimators.h"
-#include "distributions.h"
-#include "statistics.h"
+#include "proc.h"
+#include "gen.h"
+#include "est.h"
+#include "dist.h"
+#include "stat.h"
 #include "rng.h"
 #include "io.h"
-#include "utilities.h"
-#include "batteries.h"
+#include "util.h"
+#include "batt.h"
+#include "sim.h"
 
 #include <stdio.h>
 #include <stdlib.h>

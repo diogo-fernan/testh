@@ -1,14 +1,12 @@
 #include <time.h>
 
 
-void sgenrand (unsigned long seed);
-double genrand ();
-
 static int seeded = 0;
 
 
 static void rng_MT19937_sgenrand () 
 {
+	void sgenrand (unsigned long seed);
 	if (!seeded) {
 		sgenrand (time (NULL));
 		seeded = 1;
@@ -16,6 +14,7 @@ static void rng_MT19937_sgenrand ()
 }
 double rng_MT19937_genrand () 
 {
+	double genrand ();
 	if (!seeded)
 		rng_MT19937_sgenrand ();
 	return genrand ();

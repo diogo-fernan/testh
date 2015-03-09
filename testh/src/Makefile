@@ -15,10 +15,10 @@ CC 		= gcc
 CFLAGS 	= -I$(IDIR)
 LIBS 	= -lm
 
-_DEPS = regression.h distributions.h estimators.h generators.h statistics.h rng.h process.h utilities.h io.h batteries.h
+_DEPS = func.h reg.h dist.h est.h gen.h stat.h rng.h proc.h util.h io.h batt.h sim.h
 DEPS  = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = regression.o distributions.o estimators.o generators.o statistics.o utilities.o io.o rng.o process.o batteries.o test.o 
+_OBJ = func.o reg.o dist.o est.o gen.o stat.o util.o io.o rng.o proc.o batt.o sim.o test.o 
 OBJ  = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

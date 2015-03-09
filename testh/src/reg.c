@@ -1,7 +1,7 @@
 
 #include "io.h"
-#include "utilities.h"
-#include "regression.h"
+#include "util.h"
+#include "reg.h"
 
 #include <stdio.h>
 #include <stdlib.h>

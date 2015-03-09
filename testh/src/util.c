@@ -1,5 +1,5 @@
 
-#include "utilities.h"
+#include "util.h"
 #include "io.h"
 
 #include <stdio.h>
@@ -31,8 +31,8 @@
 
 
 
-void* util_MemMalloc (num)
-	size_t num;
+void* util_MemMalloc (
+	size_t num)
 {
 	if (num <= 0)
 		io_PrintErr (ERR, "invalid size (<= 0) in"
@@ -45,9 +45,9 @@ void* util_MemMalloc (num)
 			" util_MemMalloc");
 	return p;
 }
-void* util_MemCalloc (num, size)
-	size_t num;
-	size_t size;
+void* util_MemCalloc (
+	size_t num,
+	size_t size)
 {
 	if (num <= 0 || size <= 0)
 		io_PrintErr (ERR, "invalid num/size (<= 0) in"
@@ -60,12 +60,12 @@ void* util_MemCalloc (num, size)
 			" util_MemCalloc");
 	return p;
 }
-void* util_MemRealloc (p, num)
-	void *p;
-	size_t num;
+void* util_MemRealloc (
+	void 	*p,
+	size_t 	num)
 {
-	if (p == NULL || num <= 0)
-		io_PrintErr (ERR, "invalid pointer (NULL) or size (<= 0) in"
+	if (num <= 0)
+		io_PrintErr (ERR, "invalid size (<= 0) in"
 				" util_MemRealloc");
 	errno = 0;
 	p = realloc (p, num);
@@ -74,8 +74,8 @@ void* util_MemRealloc (p, num)
 			" util_MemRealloc");
 	return p;
 }
-void* util_MemFree (p)
-	void *p;
+void* util_MemFree (
+	void *p)
 {
 	if (p != NULL) {
 		free (p);
@@ -84,8 +84,8 @@ void* util_MemFree (p)
 	return NULL;
 }
 
-static double util_MemMB (B)
-	long int B;
+static double util_MemMB (
+	long int B)
 {
 	return (double) B / (1024 * 1024);
 }
@@ -103,21 +103,23 @@ void util_MemWr (B)
 }
 
 
-void util_TimeIt (clock_t *c)
+void util_TimeIt (
+	clock_t *c)
 {
 	errno = 0;
 	if ((*c = clock ()) == (clock_t) -1 )
 		io_PrintError (errno, "clock failed to determine clock time in"
 			" util_TimeIt");
 }
-void util_TimeWr (clock_t *start)
+void util_TimeWr (
+	clock_t *start)
 {
 	if (TestHVerbosity > TestH_NONE &&
 		TestHPrintPlain == OFF && TestHPrintMemCPU == ON) {
 		clock_t end;
 		util_TimeIt (&end);
 		if (*start != (clock_t) -1 && end != (clock_t) -1)
-			fprintf (stdout, "\tCPU time: %5.6lf\n\n",
+			fprintf (stdout, "\tCPU time: %5.6lf s\n\n",
 				((double) (end - *start)) / CLOCKS_PER_SEC);
 		else
 			io_PrintError (ERR, "invalid clock_t structures (-1) in"
@@ -126,10 +128,47 @@ void util_TimeWr (clock_t *start)
 	}
 	*start = (clock_t) -1;
 }
-void util_TimeReset (clock_t *c) {
+void util_TimeReset (
+	clock_t *c) {
 	if (c != NULL) {
 		*c = (clock_t) -1;
 		util_TimeIt (c);
+	}
+}
+
+void util_Copy (
+	double 	*v,
+	double	*v2,
+	int 	size)
+{	
+	if (v == NULL || v2 != NULL || size <= 0)
+		io_PrintError (ERR, "invalid parameters in"
+			" util_Copy");
+	int p;
+	v2 = (double*) util_MemMalloc (size);
+	for (p=0; p<size; p++) {
+		v2[p] = v[p];
+	}
+}
+
+void util_BubbleSort (
+	double 	*v, 
+	int 	size)
+{
+	if (v == NULL || size <= 0)
+		io_PrintError (ERR, "invalid parameters in"
+			" util_BubbleSort");
+
+	int i, j;
+	double p;
+	for (i=0; i<size; i++) {
+		for (j=1; j<size-i; j++) {
+			if (v[j-1] > v[j]) {
+				p = v[j-1];
+				v[j-1] = v[j];
+				v[j] = p;
+			}
+		}
 	}
 }
 

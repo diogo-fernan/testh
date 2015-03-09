@@ -1,10 +1,10 @@
 
 #include "io.h"
-#include "utilities.h"
-#include "estimators.h"
-#include "regression.h"
-#include "distributions.h"
-#include "statistics.h"
+#include "util.h"
+#include "est.h"
+#include "reg.h"
+#include "dist.h"
+#include "stat.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -18,14 +18,14 @@ static char TestHEstFile[TESTH_MAX] = {'\0'};
 
 
 static void est_Init (
-	est 	estimator,
-	int 	res,
-	char 	*pname,
-	int 	moment)
+	proc_Process *pr,
+	est e,
+	int res,
+	int mom)
 {
 	char e1[50], e2[50];
 
-	switch (estimator) {
+	switch (e) {
 		case TestH_RS:
 			strcpy (e1, "RescaledRangeStatistics");
 			strcpy (e2, "RS");
@@ -35,7 +35,7 @@ static void est_Init (
 			strcpy (e2, "VT");
 			break;
 		case TestH_AMT:
-			sprintf (e1, "AbsoluteMomentsTime %d", moment);
+			sprintf (e1, "AbsoluteMomentsTime %d", mom);
 			strcpy (e2, "AMT");
 			break;
 		case TestH_EBP:				
@@ -51,13 +51,14 @@ static void est_Init (
 
 	if (TestHEstWrToFile == ON) {
 		memset (TestHEstFile, '\0', TESTH_MAX);
-		strncpy (TestHEstFile, pname, strlen (pname));
+		strncpy (TestHEstFile, pr->name, strlen (pr->name));
 		strncat (TestHEstFile, ".", 1);
 		strncat (TestHEstFile, e2, strlen (e2));
 		io_FileClean (TestHEstFile);
 	}
 
 	if (TestHVerbosity > TestH_NONE && TestHPrintPlain == OFF) {
+		proc_PrintHeader (pr);
 		fprintf (stdout, "%sESTIMATOR%s: %s -- %s\n",
 			CGRAY_BLUE, CRESET, e1, e2);
 		if (TestHEstWrToFile == ON && TestHPrintPlain == OFF)
@@ -69,38 +70,36 @@ static void est_Init (
 }
 
 static void est_PrintResult (
-	int 	scale,
-	double 	est_log)
+	int 	m,
+	double 	lest)
 {
 	if (TestHVerbosity > TestH_MEDIUM) {
 		if (TestHPrintPlain == OFF)
-			fprintf (stdout, " %5d\t\t",
-				scale);
-		fprintf (stdout, "%6.2lf\t\t%6.2lf\n",
-			log (scale), est_log);
+			fprintf (stdout, " %5d\t\t", m);
+		fprintf (stdout, "%6.2lf\t\t%6.2lf\n", log (m), lest);
 	}
 	if (TestHEstWrToFile == ON)
-		io_FileWr (TestHEstFile, "a", log (scale), est_log);
+		io_FileWr (TestHEstFile, "a", log (m), lest);
 }
 
 static void est_PrintH (
-	est 	estimator,
+	est 	e,
 	double 	h,
 	double 	m,
-	int 	moment)
+	int 	mom)
 {
 	if (TestHVerbosity > TestH_NONE && TestHEstPrintH == ON) {
 		if (TestHPrintPlain == ON)
 			fprintf (stdout, "\t%lf\n", h);
 		else {
 			fprintf (stdout, "   d:\t\t\t\t= %lf\n", 2 - h);
-			switch (estimator) {
+			switch (e) {
 				case TestH_RS:
 					fprintf (stdout, "   H:\t\t\t\t= %.6lf\n", h); 
 					break;
 				case TestH_AMT:
 					fprintf (stdout, "   H: 1.0 + %.2lf / %d\t\t= %.6lf\n", 
-						m, moment, h);
+						m, mom, h);
 					break;
 				default:
 					break;
@@ -111,10 +110,10 @@ static void est_PrintH (
 
 
 static double est_RescaledRangeStatisticsAux (
-	proc_Points *fodp,  // original points, first order differences process 
-	proc_Points *pts)   // scale points
+	proc_Points *fodp, // original points, first order differences process 
+	proc_Points *pt)   // scale points
 {    
-	if (proc_CheckPoints (pts) == ERR || proc_CheckPoints (fodp) == ERR)
+	if (proc_CheckPoints (pt) == ERR || proc_CheckPoints (fodp) == ERR)
 		io_PrintErr (ERR, "invalid proc_Points structure(s) in"
 			" est_RescaledRangeStatisticsAux");
 
@@ -122,22 +121,22 @@ static double est_RescaledRangeStatisticsAux (
 	long double ds, min, max;
 	long double ssum, rs_tot;
 
-	for (i=0, rs_tot=0.0; i<pts->size; i++) {
+	for (i=0, rs_tot=0.0; i<pt->size; i++) {
 		max = -DBL_MAX; min = DBL_MAX;
 		ssum = 0.0;
 		c = 0;
-		for (j=0; j<pts->scale; j++) {
+		for (j=0; j<pt->scale; j++) {
 			ds = 0.0;
-			for (l=pts->scale*i; l<=pts->scale*i+j && l < fodp->size; l++) {
-				ds += fodp->points[l] - pts->points[i];
-				if (j == pts->scale - 1) {
+			for (l=pt->scale*i; l<=pt->scale*i+j && l<fodp->size; l++) {
+				ds += fodp->points[l] - pt->points[i];
+				if (j == pt->scale - 1) {
 					c++;
-					ssum += fodp->points[l] * fodp->points[l];
+					ssum += (fodp->points[l] * fodp->points[l]);
 				}
 			}
-			// if (j == pts->scale-1 && abs (ds) != 0.0)
-			// 	fprintf (stdout, "\t%d %d %d %Lf\n", l, pts->scale, j, ds);
-			// fprintf (stdout, "%lf\n", ssum);
+			// if (j == pt->scale-1 && abs (ds) != 0.0)
+			// 	fprintf (stdout, "\t%d %d %d %Lf\n", l, pt->scale, j, ds);
+			// fprintf (stdout, " %lf\n", ssum);
 				// ssum = 0.0 many times on the normalized process of
 				// the aggregation of renewal processes
 				// below NaN is obtained because sqrt (0.0)
@@ -148,19 +147,22 @@ static double est_RescaledRangeStatisticsAux (
 			min = 0.0;
 		if (max == -DBL_MAX)
 			max = 0.0;
-		long double stdDev = sqrt (ssum / (double) c - 
-			pts->points[i] * pts->points[i]);
-			// stdDev = 0.0 ? 1.0 : stdDev;
+		long double stdDev = (long double) sqrt (ssum / (long double) c - 
+			pt->points[i] * pt->points[i]);
+			// stdDev == 0.0 ? 1.0 : stdDev;
 		rs_tot += (max - min) / stdDev;
+		/* fprintf (stdout, "\t%d %Lf %Lf %d %Lf %lf %Lf\n", 
+			i, rs_tot, stdDev, c, ssum, pt->points[i] * pt->points[i],
+			ssum / (long double) c - pt->points[i] * pt->points[i]); */
 	}
 
-	return rs_tot / pts->size;
+	return rs_tot / pt->size;
 }
 
 double est_RescaledRangeStatistics (
-	proc_Process *proc)
+	proc_Process *pr)
 {
-	if (proc_CheckProcess (proc) == ERR)
+	if (proc_CheckProcess (pr) == ERR)
 		io_PrintErr (ERR, "invalid proc_Process structure in"
 			" est_RescaledRangeStatistics");
 	
@@ -172,18 +174,25 @@ double est_RescaledRangeStatistics (
 	proc_Scales *scales;
 	proc_Points *points;
 
-	scales = proc->scales;
+	scales = pr->scales;
 	x = (double*) util_MemMalloc (scales->conf->no * sizeof (double));
 	y = (double*) util_MemMalloc (scales->conf->no * sizeof (double));
 
-	proc_PrintHeader (proc);
-	est_Init (TestH_RS, ON, proc->name, -1);
+	est_Init (pr, TestH_RS, ON, -1);
 
 	for (s=0; s<scales->conf->no; s++) {
 		points = &scales->scales[s];
 		
+		double rs = log (est_RescaledRangeStatisticsAux (pr->points, points));
+		if (isnan (rs)) {
+			if (s == 0)
+				y[s] = 0.0;
+			else
+				y[s] = y[s-1];
+		}
+		else 
+			y[s] = rs;
 		x[s] = log (points->scale);
-		y[s] = log (est_RescaledRangeStatisticsAux (proc->points, points));
 
 		est_PrintResult (points->scale, y[s]);
 	}
@@ -205,8 +214,8 @@ double est_RescaledRangeStatistics (
 
 
 static double est_AbsoluteMomentsTimeAux (
-	proc_Process 	*proc,
-	int 			moment)
+	proc_Process *pr,
+	int 		 mom)
 {
 	clock_t c;
 	util_TimeIt (&c);
@@ -215,15 +224,15 @@ static double est_AbsoluteMomentsTimeAux (
 	double *x, *y;
 	proc_Scales *scales; 
 
-	scales = proc->scales;
+	scales = pr->scales;
 	x = (double*) util_MemMalloc (scales->conf->no * sizeof (double));
 	y = (double*) util_MemMalloc (scales->conf->no * sizeof (double));
 	
-	// stat_AbsoluteMomentsTime (proc->points, moment);
-	// double y_o = log (proc->points->amt);
+	// stat_AbsoluteMomentsTime (pr->points, mom);
+	// double y_o = log (pr->points->amt);
 
 	for (s=0; s<scales->conf->no; s++) {
-		stat_AbsoluteMomentsTime (&scales->scales[s], moment);
+		stat_AbsoluteMomentsTime (&scales->scales[s], mom);
 		y[s] = log (scales->scales[s].amt);
 		x[s] = log (scales->scales[s].scale);
 
@@ -235,9 +244,9 @@ static double est_AbsoluteMomentsTimeAux (
 	double Rsquared = reg_CoefficientOfDetermination (y, x, scales->conf->no);
 	dist_F (Rsquared, scales->conf->no);
 
-	// H = 1 + beta / moment
-	double H = 1.0 + l->m / moment;
-	est_PrintH (TestH_AMT, H, l->m, moment);
+	// H = 1 + beta / mom
+	double H = 1.0 + l->m / mom;
+	est_PrintH (TestH_AMT, H, l->m, mom);
 
 	long int mem = sizeof (x) * scales->conf->no +
 				sizeof (y) * scales->conf->no;
@@ -249,30 +258,28 @@ static double est_AbsoluteMomentsTimeAux (
 
 
 double est_VarianceTime (
-	proc_Process *proc)
+	proc_Process *pr)
 {
-	if (proc_CheckProcess (proc) == ERR)
+	if (proc_CheckProcess (pr) == ERR)
 		io_PrintErr (ERR, "invalid proc_Process structure in"
 			" est_VarianceTime");
 
-	proc_PrintHeader (proc);
-	est_Init (TestH_VT, ON, proc->name, -1);
+	est_Init (pr, TestH_VT, ON, -1);
 
-	return est_AbsoluteMomentsTimeAux (proc, 2);
+	return est_AbsoluteMomentsTimeAux (pr, 2);
 }
 
 void est_AbsoluteMomentsTime (
-	proc_Process 	*proc,
-	int 			moment)
+	proc_Process *pr,
+	int 		 mom)
 {
-	if (proc_CheckProcess (proc) == ERR || moment <= 0)
+	if (proc_CheckProcess (pr) == ERR || mom <= 0)
 		io_PrintErr (ERR, "invalid parameters in"
 			" est_AbsoluteMomentsTime");
 
-	proc_PrintHeader (proc);
-	est_Init (TestH_AMT, ON, proc->name, moment);
+	est_Init (pr, TestH_AMT, ON, mom);
 
-	est_AbsoluteMomentsTimeAux (proc, moment);
+	est_AbsoluteMomentsTimeAux (pr, mom);
 }
 
 
@@ -284,32 +291,31 @@ static double est_CrossingLines (
 }
 
 void est_EmbeddedBranchingProcess (
-	proc_Process 	*proc,
+	proc_Process 	*pr,
 	int 			K)
 {
-	if (proc->points == NULL || proc_CheckPoints (proc->points) == ERR)
+	if (pr->points == NULL || proc_CheckPoints (pr->points) == ERR)
 		io_PrintErr (ERR, "invalid parameters in"
 			" est_EmbeddedBranchingProcess");
 	
 	clock_t c;
 	util_TimeIt (&c);
-	proc_PrintHeader (proc);
-	est_Init (TestH_EBP, OFF, proc->name, -1);
+	est_Init (pr, TestH_EBP, OFF, -1);
  
 	int p, k;
 	int *crossings;
 	double line, lastLineCrossed, delta;
 	double *crossingLines;
 
-	proc_Points *fGmPoints = proc->points;
+	proc_Points *fGmPoints = pr->points;
 
-	if (proc->points->typeOfSignal == TestH_fGn) {
-		delta = proc->points->stdDev;
-		// fGmPoints = proc_fractionalBrownianMotion (proc->points);
+	if (pr->points->typeOfSignal == TestH_fGn) {
+		delta = pr->points->stdDev;
+		// fGmPoints = proc_fractionalBrownianMotion (pr->points);
 		// not supposed to be commented
 	}
-	else if (proc->points->typeOfSignal == TestH_fBm) {
-		proc_Points* fGnPoints = NULL; // = proc_fractionalGaussianNoise (proc->points);
+	else if (pr->points->typeOfSignal == TestH_fBm) {
+		proc_Points* fGnPoints = NULL; // = proc_fractionalGaussianNoise (pr->points);
 		// not supposed to be commented
 		delta = fGnPoints->stdDev;
 		util_MemFree (fGnPoints);

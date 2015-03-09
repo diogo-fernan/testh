@@ -15,6 +15,9 @@ void util_TimeIt (clock_t *c);
 void util_TimeWr (clock_t *start);
 void util_TimeReset (clock_t *c);
 
+void util_Copy (double *v, double *v2, int size);
+void util_BubbleSort (double *v, int size);
+
 char* util_GetHostname ();
 char* util_GetUsername ();
 char* util_GetCwd ();
