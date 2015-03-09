@@ -6,9 +6,9 @@
 
 *TestH* has been written for researchers and for research purposes. With that in mind, the library can be used in a wide array of research fields.
 
-# Example
+# Minimal Working Example
 
-Below is an example showing a *fractional Brownian motion* (fBm) process being generated with a pre-defined target Hurst parameter, which is then transformed to a *fractional Gaussian noise* (fGn) process. Afterwards, the aggregate processes that are needed by the procedure to estimate the Hurst parameter are computed and finally the Variance Time (VT) method is called upon.
+Below is a minimal working example showing a *fractional Brownian motion* (fBm) process being generated with a pre-defined target Hurst parameter, which is then transformed to a *fractional Gaussian noise* (fGn) process. Afterwards, the aggregate processes that are needed by the procedure to estimate the Hurst parameter are computed and finally the Variance Time (VT) method is called upon.
 
 ```
 #include "process.h"
