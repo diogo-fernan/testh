@@ -6,8 +6,9 @@
 enum TestHGenerator { 
 	TestH_EG		= -0x1,
 	TestH_RF		= -0x2,
-	TestH_RFT		= -0x3,
-	TestH_RFTA		= -0x4,
+	TestH_RFM		= -0x3,
+	TestH_RFT		= -0x4,
+	TestH_RFTA		= -0x5,
 
 	TestH_Gaussian	= 0x0,
 
@@ -31,6 +32,8 @@ proc_Process* gen_ExternGen (int N, char *name, double (*gen_func) (void),
 
 
 proc_Process* gen_ReadFile (const char *path, const char *name,
+	tosig sig);
+proc_Process* gen_ReadFileMatrix (const char *path, const char *name,
 	tosig sig);
 proc_Process* gen_ReadFileTime (const char *path, const char *name,
 	tosig sig, int mult);

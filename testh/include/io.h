@@ -1,6 +1,8 @@
 #ifndef __TESTH_IO__
 #define __TESTH_IO__
 
+#include "gen.h"
+
 #include <stdio.h>
 
 #define ON 	1
@@ -54,7 +56,8 @@ FILE* io_FileOpen (const char *path, const char *mode);
 void io_FileClose (const char *path, FILE *f);
 void io_FileClean (const char *path);
 int io_FileLines (FILE *f);
-int io_FileGetNum (FILE *f, double *p);
+int io_FileColumns (FILE *f);
+int io_FileGetNum (FILE *f, double *p, gen g);
 void io_FileWr (const char *path, const char *mode, 
 	const double d1, const double d2);
 

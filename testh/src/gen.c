@@ -5,6 +5,7 @@
 #include "dist.h"
 #include "stat.h"
 #include "rng.h"
+#include "io.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +30,10 @@ void gen_PrintHeader (
 			case TestH_RF:
 				strcpy (g1, "ReadFile");
 				strcpy (g2, "RF");
+				break;
+			case TestH_RFM:
+				strcpy (g1, "ReadFileMatrix");
+				strcpy (g2, "RFM");
 				break;
 			case TestH_RFT:
 				strcpy (g1, "ReadFileTime");
@@ -175,7 +180,7 @@ proc_Process* gen_ReadFile (
 	  
 	points = NULL;
 	for (;;) {
-		if (io_FileGetNum (f, &d) == EOF)
+		if (io_FileGetNum (f, &d, TestH_RF) == EOF)
 			break;
 		points = (double*) util_MemRealloc (points, ++s * sizeof (double));
 		points[s-1] = d;
@@ -196,6 +201,64 @@ proc_Process* gen_ReadFile (
 	return pr;
 }
 
+proc_Process* gen_ReadFileMatrix (
+	const char *path,
+	const char *name,
+	tosig sig)
+{
+	if (path == NULL || strlen (path) <= 0 ||
+		(sig != TestH_fGn && sig != TestH_fBm))
+		  io_PrintErr (ERR, "invalid parameters in"
+			  " gen_ReadFileMatrix");
+
+	clock_t c;
+	util_TimeIt (&c);
+	gen_PrintHeader (TestH_RFM);
+
+	FILE *f = io_FileOpen (path, "r");
+	int i, j, k;
+	int fl, co = 0, l = 0;
+	double d, dummy, *points = NULL;
+	proc_Process* procs = NULL;
+
+	co = io_FileColumns (f);
+	rewind (f);
+	l = io_FileLines (f);
+	if (co == 0 || l == 0)
+		io_PrintErr (ERR, "invalid file %s (empty) in"
+			" gen_ReadFileColumns", path);
+
+	procs = (proc_Process*) util_MemMalloc (co * sizeof (proc_Process));
+
+	for (i=0; i<co; i++) {
+		rewind (f);
+		if (points != NULL)
+			util_MemFree (points);
+		points = (double*) util_MemMalloc (l * sizeof(double));
+
+		for (j=0; j<l; j++) {
+			for (k=0; k<=i; k++)
+				fl = io_FileGetNum (f, &d, TestH_RFM);
+			for (k=i+1; k<co; k++)
+				fl = io_FileGetNum (f, &dummy, TestH_RFM);
+
+			if (fl == EOF)
+				break;
+			points[j] = d;
+		}
+
+		procs[i] = *proc_CreateProcess (name, points, NULL, l, sig);
+	}
+
+	io_FileClose (path, f);
+
+	long int mem = sizeof (points) * l + sizeof (proc_Process) * c;
+	util_MemWr (mem);
+	util_MemFree (points);
+	util_TimeWr (&c);	
+	return procs;
+}
+
 static proc_Process* gen_ReadFileTimeAux (
 	const char 	*path,
 	const char 	*name,
@@ -208,12 +271,12 @@ static proc_Process* gen_ReadFileTimeAux (
 	
 	times = points = NULL;
 	for (;;) {
-		if (io_FileGetNum (f, &d) == EOF)
+		if (io_FileGetNum (f, &d, TestH_RFT) == EOF)
 			break;
 		times = (double*) util_MemRealloc (times, ++s1 * sizeof (double));
 		times[s1-1] = d * mult;
 		
-		if (io_FileGetNum (f, &d) == EOF)
+		if (io_FileGetNum (f, &d, TestH_RFT) == EOF)
 			break;
 		points = (double*) util_MemRealloc (points, ++s2 * sizeof (double));
 		points[s2-1] = d;
@@ -872,21 +935,3 @@ proc_Process* gen_Paxson (
 	util_TimeWr (&c);
 	return pr;
 }
-
-
-
-
-
-
-
-
-/* Random Midpoint Displacement (RMD)
-
-Dear Bernardo,
-
-nice to hear of your and Prof. Inácio's interest in this work. Indeed, we have not kept our old C code alive. However, Ton Dieker has a wonderful fBm page http://www2.isye.gatech.edu/~adieker3/fbm.html that includes also our algorithm - please look there.
-
-BTW, nobody (as far as I know) has characterized the accuracy of our approximate algorithm through some metric concerning the whole covariance structure, not only the Hurst parameter. It would be nice to know whether for example m=n=10 is "practically perfect" or not. If you find some fresh idea in that direction, please send a preprint to me also!
-
-Best regards,
-Ilkka Norros */

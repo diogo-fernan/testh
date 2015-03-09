@@ -71,15 +71,15 @@ int main (int argc, char *argv[]) {
 
 	io_PrintInit ("make; make run", argv[0]);
 
-	proc_Process *proc1 = gen_fBmSequentialGenerationAlgorithm (100, 0.8, S, 
+	proc_Process *pr1 = gen_fBmSequentialGenerationAlgorithm (100, 0.8, S, 
 				TestH_fGn);
-	// proc_Process *proc2 = gen_AggRenewal (100, 0.8, RENEWAL, xm, TestH_fGn);
+	// proc_Process *pr2 = gen_AggRenewal (100, 0.8, RENEWAL, xm, TestH_fGn);
 
-	proc_PrintPoints (proc1->points);
-	// proc_PrintPoints (proc2->points);
+	proc_PrintPoints (pr1->points);
+	// proc_PrintPoints (pr2->points);
 
-	proc_CreateScales (proc1, TestH_INC, 2, 8, 2);
-	proc_PrintScales (proc1);
+	proc_CreateScales (pr1, TestH_INC, 2, 8, 2);
+	proc_PrintScales (pr1);
 
 	io_PrintDone ();
 	return EXIT_SUCCESS;
@@ -97,7 +97,7 @@ int main (int argc, char *argv[]) {
 
 	io_PrintInit ("make; make run", argv[0]);
 
-	proc_Process *proc = NULL;
+	proc_Process *pr = NULL;
 
 	int i;
 	double j;
@@ -110,27 +110,27 @@ int main (int argc, char *argv[]) {
 		H1 = H2 = 0.0;
 		H1_s = H2_s = 0.0;
 		for (i=0; i<(int) s; i++) {
-			// proc = gen_SimpleSelfSimilarProcessGenerator (102400, j, S, TestH_fGn);
-			// proc = gen_fBmSequentialGenerationAlgorithm (102400, j, S, TestH_fGn);
-			// proc = gen_AggRenewal (100000, j, RENEWAL, xm, TestH_fGn);
-			proc = gen_Hosking (10000, j, TestH_fGn);
+			// pr = gen_SimpleSelfSimilarProcessGenerator (102400, j, S, TestH_fGn);
+			// pr = gen_fBmSequentialGenerationAlgorithm (102400, j, S, TestH_fGn);
+			// pr = gen_AggRenewal (100000, j, RENEWAL, xm, TestH_fGn);
+			pr = gen_Hosking (10000, j, TestH_fGn);
 
-			// proc_PrintPoints (proc->points);
+			// proc_PrintPoints (pr->points);
 
-			proc_CreateScales (proc, TestH_POW, 2, 10, 2);
-			// proc_CreateScales (proc, TestH_INC, 2, 10, 2);
-			// proc_PrintScales (proc);
-			// proc_PrintPoints (&proc->scales->scales[0]);
+			proc_CreateScales (pr, TestH_POW, 2, 10, 2);
+			// proc_CreateScales (pr, TestH_INC, 2, 10, 2);
+			// proc_PrintScales (pr);
+			// proc_PrintPoints (&pr->scales->scales[0]);
 
-			h1 = est_VarianceTime (proc);
-			h2 = est_RescaledRangeStatistics (proc);
+			h1 = est_VarianceTime (pr);
+			h2 = est_RescaledRangeStatistics (pr);
 			// fprintf (stdout, "H1: %lf H2: %lf\n", H1 / 100.0, H2);
 			H1 += h1;
 			H2 += h2;
 			H1_s += h1 * h1;
 			H2_s += h2 * h2;
 
-			proc_DeleteProcess (proc);
+			proc_DeleteProcess (pr);
 		}
 		H1 /= s;
 		H1_s /= s;
@@ -158,53 +158,51 @@ int main (int argc, char *argv[]) {
 	io_PrintInit ("make; make run", argv[0]);
 	// io_PrintTestH ();
 
-	proc_Process *proc = NULL;
-	// proc_Process *proc2 = NULL;
+	proc_Process *pr = NULL;
+	// proc_Process *pr2 = NULL;
 	proc_ScalesConfig *conf = NULL;
 
-	// proc = gen_ReadFile ("../files/PPRMI.csvTU1.0", "PPRMI.csvTU1.0", TestH_fGn);
-	// proc = gen_ReadFile ("../files/BC-pAug89.txt.sed", "BC_Aug89", TestH_fGn);
-	// proc = gen_Gaussian (N, TestH_fGn);
-	// proc = gen_AggRenewal (N, H, RENEWAL, xm, TestH_fGn);
-	// proc = gen_fBmSequentialGenerationAlgorithm (N, H, S, TestH_fGn);
-	// proc = gen_SimpleSelfSimilarProcessGenerator (N, H, S, TestH_fGn);
+	// pr = gen_ReadFile ("../files/PPRMI.csvTU1.0", "PPRMI.csvTU1.0", TestH_fGn);
+	// pr = gen_ReadFile ("../files/BC-pAug89.txt.sed", "BC_Aug89", TestH_fGn);
+	// pr = gen_ReadFileMatrix ("data", "name", TestH_fGn);
+	// pr = gen_Gaussian (N, TestH_fGn);
+	// pr = gen_AggRenewal (N, H, RENEWAL, xm, TestH_fGn);
+	// pr = gen_fBmSequentialGenerationAlgorithm (N, H, S, TestH_fGn);
+	// pr = gen_SimpleSelfSimilarProcessGenerator (N, H, S, TestH_fGn);
 
-	// proc2 = gen_ExternGen (100, "ExtGen", ExtGen, TestH_fGn);
-	// proc_CreateScales (proc2, MIN_SCALE, MAX_SCALE, STEP);
-	// proc_PrintProcess (proc2);
-	// proc_PrintPoints (proc2->points);
+	// pr2 = gen_ExternGen (100, "ExtGen", ExtGen, TestH_fGn);
+	// proc_CreateScales (pr2, MIN_SCALE, MAX_SCALE, STEP);
+	// proc_PrintProcess (pr2);
+	// proc_PrintPoints (pr2->points);
 
-	// proc_PrintPoints (proc->points);
-	// proc_FractionalGaussianNoise (proc);
-	// proc_Normalize (proc->points);
-	// proc_PrintPoints (proc->points);
-	// proc_FractionalBrownianMotion (proc);
-	// proc_PrintPoints (proc->points);
+	// proc_PrintPoints (pr->points);
+	// proc_FractionalGaussianNoise (pr);
+	// proc_Normalize (pr->points);
+	// proc_PrintPoints (pr->points);
+	// proc_FractionalBrownianMotion (pr);
+	// proc_PrintPoints (pr->points);
 
 	// conf = proc_CreateScalesConfig (TestH_INC, 4, 10, 2);
 	conf = proc_CreateScalesConfig (TestH_POW, 7, 11, 2);
 
-	// proc_CreateScales (proc, conf);
-	// proc_CreateScalesTime (proc, TMIN_SCALE, TMAX_SCALE, TMULTIPLIER);
+	// proc_CreateScales (pr, conf);
+	// proc_CreateScalesTime (pr, TMIN_SCALE, TMAX_SCALE, TMULTIPLIER);
 	
-	// proc_PrintProcessStruct (proc);
-	// proc_PrintProcess (proc);
-	// proc_PrintPoints (&proc->scales->scales[0]);
-	// proc_PrintScales (proc);
+	// proc_PrintProcessStruct (pr);
+	// proc_PrintProcess (pr);
+	// proc_PrintPoints (&pr->scales->scales[0]);
+	// proc_PrintScales (pr);
 
-	// est_VarianceTime (proc);
-	// est_RescaledRangeStatistics (proc);
-	// est_AbsoluteMomentsTime (proc, 2);
-	// est_AbsoluteMomentsTime (proc, 3);
-	// est_EmbeddedBranchingProcess (proc, 5);
-
+	// est_VarianceTime (pr);
+	// est_RescaledRangeStatistics (pr);
+	
 	batt_Standard (TestH_fBmSGA, 10e5, 2, 0.50, 0.99, 0.05, conf);
 
-	// stat_AutocorrelationFunction (proc, 1, 40, H);
+	// stat_AutocorrelationFunction (pr, 1, 40, H);
 
-	// util_MemWr (proc_SizeOfProcess (proc));
-	// proc_DeleteScales  (proc);
-	proc_DeleteProcess (proc);
+	// util_MemWr (proc_SizeOfProcess (pr));
+	// proc_DeleteScales (pr);
+	proc_DeleteProcess (pr);
 
 	io_PrintDone ();
 	return EXIT_SUCCESS;

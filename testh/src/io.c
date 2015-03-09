@@ -59,6 +59,7 @@ void io_PrintTestH ()
 			"\t* enum gen\n"
 				"\t\tTestH_EG\n"
 				"\t\tTestH_RF\n"
+				"\t\tTestH_RFM\n"
 				"\t\tTestH_RFT\n"
 				"\t\tTestH_Gauss\n"
 				"\t\tTestH_AR\n"
@@ -200,15 +201,15 @@ int io_CheckH (
 		: OK; 
 }
 
-int io_CheckPowerOfTwo (num)
-	int num;
+int io_CheckPowerOfTwo (
+	int num)
 {
 	return (num != 0) && ((num & (num - 1)) == 0);        
 }
 
-int io_PowerOfExp (num, b)
-	int num;
-	int b;
+int io_PowerOfExp (
+	int num,
+	int b)
 {
 	if (num <= 0 || b <= 0)
 		io_PrintErr (ERR, "invalid parameters in"
@@ -216,9 +217,9 @@ int io_PowerOfExp (num, b)
 	return (int) (log (num) / log (b));
 }
 
-int io_CheckPowerOf (num, b)
-	int num;
-	int b;
+int io_CheckPowerOf (
+	int num,
+	int b)
 {
 	if (num <= 0 || b <= 0)
 		io_PrintErr (ERR, "invalid parameters in"
@@ -241,9 +242,9 @@ int io_CheckPowerOf (num, b)
 }
 
 
-FILE* io_FileOpen (path, mode)
-	const char *path;
-	const char *mode;
+FILE* io_FileOpen (
+	const char *path,
+	const char *mode)
 {
 	FILE *f;
 	errno = 0;
@@ -252,9 +253,9 @@ FILE* io_FileOpen (path, mode)
 			" io_OpenFile", path);
 	return f;
 }
-void io_FileClose (path, f)
-	const char *path;
-	FILE *f;
+void io_FileClose (
+	const char 	*path,
+	FILE 		*f)
 {
 	errno = 0;
 	if (f != NULL && 
@@ -262,30 +263,47 @@ void io_FileClose (path, f)
 			io_PrintErr (errno, "fclose failed closing %s in"
 				" io_FileClose", path);
 }
-void io_FileClean (path) 
-	const char *path;
+void io_FileClean (
+	const char *path)
 {
 	FILE *f = io_FileOpen (path, "w");
 	io_FileClose (path, f);
 }
-int io_FileLines (f)
-	FILE *f;
+int io_FileLines (
+	FILE *f)
 {
 	if (f == NULL)
 		io_PrintErr (ERR, "invalid FILE pointer (NULL) in"
 			" io_FileLines");
 	int l = 0, ch = 0;
 	while (EOF != (ch = fgetc(f))) {
-		if (ch == '\n') {
+		if (ch == '\n')
 			l++;
-		}
 	}
 	return l;
 }
+int io_FileColumns (
+	FILE *f)
+{
+	if (f == NULL)
+		io_PrintErr (ERR, "invalid FILE pointer (NULL) in"
+			" io_FileColumns");
+	int c = 0, fl = 0;
+	double d;
+	for (;;) {
+		fl = io_FileGetNum (f, &d, TestH_RFM); 
+		if (fl == OK || fl == TestH_RFM)
+			c++;
+		if (fl == TestH_RFM)
+			break;
+	}
+	return c;
+}
 
-int io_FileGetNum (f, p)
-	FILE *f;
-	double *p;
+int io_FileGetNum (
+	FILE 	*f,
+	double 	*p,
+	gen 	g)
 {
 	if (f == NULL || p == NULL)
 		io_PrintErr (ERR, "invalid FILE or double pointer (NULL) in"
@@ -296,10 +314,10 @@ int io_FileGetNum (f, p)
 	s = m = d = dd = ch = 0;
 	
 	while (EOF != (ch = fgetc(f))) {
-		// fprintf (stdout, " %c %d\n", ch, s);
+		// fprintf (stdout, " [%c, %d] %d\n", ch, ch, s);
 		if (ch == '-')
 			m = 1;
-		if ((ch == '.' || ch == ',') && d != 1) {
+		else if ((ch == '.' || ch == ',') && d != 1) {
 			if (s > 0)
 				d = 1;
 		}
@@ -332,17 +350,23 @@ int io_FileGetNum (f, p)
 				str[s] = '\0';
 				*p = atof (str);
 				free (str);
+				/* if (g == TestH_RFM && 
+					s != 0 && ch == ' ')
+					return TestH_RFM; */
+				if (g == TestH_RFM && 
+					s != 0 && ch == '\n')
+					return TestH_RFM;
 				return OK;
 			}
 		}
 	}
 	return EOF;
 }
-void io_FileWr (path, mode, d1, d2)
-	const char *path;
-	const char *mode;
-	const double d1;
-	const double d2;
+void io_FileWr (
+	const char 		*path,
+	const char 		*mode,
+	const double 	d1,
+	const double 	d2)
 {
 	FILE *f = io_FileOpen (path, mode);	
 	fprintf (f, "%lf %lf\n", d1, d2);
