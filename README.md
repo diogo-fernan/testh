@@ -21,19 +21,13 @@ Below is a minimal working example showing a *fractional Brownian motion* (fBm) 
 #define H		(double) 0.80
 #define S		16
 
-// scales
-#define MIN		2
-#define MAX		20
-#define STEP	2
-
 int main (void) {
   TestHVerbosity = TestH_HIGH;
 
   proc_Process *proc = gen_fBmSequentialGenerationAlgorithm (N, H, S, TestH_fBm);
   proc_FractionalGaussianNoise (proc);
   
-  proc_ScalesConfig *conf = 
-  proc_CreateScalesConfig (TestH_POW, 7, 11, 2);
+  proc_ScalesConfig *conf = proc_CreateScalesConfig (TestH_POW, 7, 11, 2);
   proc_CreateScales (proc, conf);
   proc_PrintProcess (proc);
   
