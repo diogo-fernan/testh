@@ -36,7 +36,7 @@ void io_PrintTestH ()
 		io_PrintSep ();
 		fprintf (stdout, 
 			" TestH -- API Summary\n\n"
-			" - process.h\n"
+			" - proc.h (process)\n"
 			"\t* struct proc_Process\n"
 			"\t* struct proc_ScalesConfig\n"
 			"\t* enum tosig\n"
@@ -55,7 +55,7 @@ void io_PrintTestH ()
 			"\tproc_Normalize\n"
 			"\tproc_FractionalGaussianNoise\n"
 			"\tproc_FractionalBrownianMotion\n"
-			" - generators.h\n"
+			" - gen.h (generators)\n"
 			"\t* enum gen\n"
 				"\t\tTestH_EG\n"
 				"\t\tTestH_RF\n"
@@ -72,7 +72,7 @@ void io_PrintTestH ()
 			"\tgen_fBmSequentialGenerationAlgorithm\n"
 			"\tgen_SimpleSelfSimilarProcessGenerator\n"
 			"\tgen_Hosking\n"
-			" - estimators.h\n"
+			" - est.h (estimators)\n"
 			"\t* enum est\n"
 				"\t\tTestH_RS\n"
 				"\t\tTestH_VT\n"
@@ -82,7 +82,7 @@ void io_PrintTestH ()
 			"\test_VarianceTime\n"
 			"\test_AbsoluteMomentsTime\n"
 			"\test_EmbeddedBranchingProcess\n"
-			" - batteries.h\n"
+			" - batt.h (batteries)\n"
 			"\tbatt_Standard\n"
 			"\n");
 	}
