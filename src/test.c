@@ -196,7 +196,7 @@ int main (int argc, char *argv[]) {
 	// est_VarianceTime (pr);
 	// est_RescaledRangeStatistics (pr);
 	
-	batt_Standard (TestH_fBmSGA, 10e5, 2, 0.50, 0.99, 0.05, conf);
+	batt_Generator (TestH_fBmSGA, 10e5, 2, 0.50, 0.99, 0.05, conf);
 
 	// stat_AutocorrelationFunction (pr, 1, 40, H);
 

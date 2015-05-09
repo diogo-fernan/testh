@@ -1,3 +1,5 @@
+# Makefile
+
 # http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/
 
 # sudo bash
@@ -34,7 +36,7 @@ run:
 	./$(EXEC) $(h)
 
 clean:
-	rm -f  *~ $(ODIR)/*.o $(IDIR)/*~ 
+	rm -f *~ $(ODIR)/*.o $(IDIR)/*~ 
 	rm -f $(EXEC)
 
 # check discussions below for input variables to make
