@@ -1,3 +1,5 @@
+#### *TestH* is now mantained at https://github.com/cdgramos/testh. Also check out https://cdgramos.github.io/testh/ for more information.
+
 # TestH
 
 *TestH* is an ANSI C library implementing several pseudo-random number generators (PRNGs) for **self-similar sequences** and several **Hurst parameter** estimators (also known as the Hurst exponent) described in the literature. It is an on-going research and development project, whose main objective is to provide researchers with the means to estimate the Hurst parameter and to generate sequences with the self-similarity property embedded in the data. It represents an effort to integrate the different methods in a normalized and comprehensive manner in a single software package, which is not found in other tools.
