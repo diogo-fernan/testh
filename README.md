@@ -67,3 +67,7 @@ For a more detailed insight about self-similarity and the Hurst Parameter, pleas
 * Pedro R. M. Inácio, [*Study of the Impact of Intensive Attacks in the Self-Similarity Degree of the Network Traffic in Intra-Domain Aggregation Points*](http://www.di.ubi.pt/~mario/files/PhDThesis-PedroInacio.pdf), Ph.D. Thesis, Ph.D. in Computer Science and Engineering, Department of Computer Science, University of Beira Interior, Covilhã, December, 2009. 
 * Pedro R. M. Inácio, Branka Lakic, Mário M. Freire, Manuela Pereira, and Paulo P. Monteiro, [*The Design and Evaluation of the Simple Self-Similar Sequences Generator*](http://www.sciencedirect.com/science/article/pii/S0020025509003429), Elsevier Information Sciences, Vol. 179, No. 23, pages 4029-4045, 2009. ISI Impact Factor (2009): 3.291.
 * Pedro R. M. Inácio, Mário M. Freire, Manuela Pereira, and Paulo P. Monteiro, [*Fast Synthesis of Persistent Fractional Brownian Motion*](http://dl.acm.org/citation.cfm?id=2133395), ACM Transactions on Modelling and Computer Simulation (TOMACS), 22(2): Article 11, 21 pages, March 2012. ISSN 1049-3301. ISI Impact Factor (2011): 1.114.
+
+# Author
+
+[@dfernan__](https://twitter.com/dfernan__)
